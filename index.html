@@ -2,12 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FounderOS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <div class="hero-bg">
+    <canvas id="heroWaves"></canvas>
+    <div class="hero-radial"></div>
+  </div>
   <nav class="nav">
     <div class="nav-logo">FounderOS</div>
   </nav>
@@ -15,9 +19,11 @@
     <section class="hero fade-in">
       <div class="hero-inner">
         <h1>Your Startup Ops,<br>Handled.</h1>
-        <p class="subhead">The back office that runs itself — no dashboards, no checklists, just done.</p>
+        <p class="subhead">
+          The back office that runs itself — no dashboards, no checklists, just done.
+        </p>
         <form class="waitlist-form">
-          <input type="email" placeholder="Enter your email" required />
+          <input type="email" placeholder="Enter your email" required>
           <button type="submit" id="waitlistBtn" aria-label="Request Early Access">Request Early Access</button>
         </form>
         <div class="status-update-container">
@@ -32,13 +38,18 @@
       </div>
     </section>
   </main>
-  <footer class="unified-footer">
-    <div class="footer-line">Built in chaos. Designed for calm.</div>
-    <div class="footer-note">FounderOS © 2024</div>
-    <nav class="footer-links">
-      <a href="#" class="footer-link">Why I Built FounderOS</a><span class="footer-sep">·</span>
-      <a href="#" class="footer-link">Terms of Use</a><span class="footer-sep">·</span>
-      <a href="#" class="footer-link">Privacy Policy</a>
+  <footer>
+    <span class="footer-line">Built in chaos. Designed for calm.</span>
+    <span class="footer-note">FounderOS © 2024</span>
+  </footer>
+  <!-- Minimal Legal Footer -->
+  <footer class="mini-footer">
+    <nav>
+      <a href="#" class="mini-footer-link">Why I Built FounderOS</a>
+      <span class="mini-footer-sep">·</span>
+      <a href="#" class="mini-footer-link">Terms of Use</a>
+      <span class="mini-footer-sep">·</span>
+      <a href="#" class="mini-footer-link">Privacy Policy</a>
     </nav>
   </footer>
   <script src="script.js"></script>
