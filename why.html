@@ -6,6 +6,73 @@
   <title>Why I Built This | FounderOS</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .story-section {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .story-section p {
+      font-size: 1.2rem;
+      line-height: 1.8;
+      color: var(--cream);
+      margin-bottom: 2rem;
+    }
+    
+    .story-section p:first-of-type {
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: var(--accent);
+    }
+    
+    .founder-photo {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      margin: 3rem auto;
+      display: block;
+      object-fit: cover;
+      border: 3px solid var(--accent);
+      box-shadow: 0 0 30px rgba(166, 161, 255, 0.2);
+    }
+    
+    .pattern-list {
+      list-style: none;
+      padding: 0;
+      margin: 2rem 0;
+    }
+    
+    .pattern-list li {
+      position: relative;
+      padding-left: 2rem;
+      margin-bottom: 1rem;
+      color: var(--cream);
+    }
+    
+    .pattern-list li::before {
+      content: "•";
+      color: var(--accent);
+      position: absolute;
+      left: 0;
+      font-size: 1.5rem;
+    }
+    
+    .final-cta {
+      text-align: center;
+      margin: 4rem 0;
+      padding: 2rem;
+      background: var(--carbon-light);
+      border-radius: 1rem;
+      border: 1px solid var(--input-border);
+    }
+    
+    .final-cta p {
+      font-size: 1.3rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+  </style>
 </head>
 <body>
   <nav class="nav">
@@ -13,10 +80,46 @@
   </nav>
 
   <main class="page-content">
-    <h1>Why I Built FounderOS</h1>
-    <p>I built FounderOS after seeing a founder friend buried in physical mail and paperwork. There were tools for pitch decks, CRMs, and chat — but nothing to handle the boring ops that pile up.</p>
-    <p>This site is a quiet experiment in making the back office invisible. Just done — without checklists, dashboards, or chaos.</p>
-    <p>More to come soon.</p>
+    <div class="story-section">
+      <h1>Why I Built FounderOS</h1>
+      
+      <p>Startups are the fun kind of chaos. The high-velocity, whiteboard-filled, scrappy kind. The kind that makes you fall in love with building.</p>
+      
+      <p>But between the brainstorms and breakthroughs, there's the chaos that just... grinds you down.</p>
+      
+      <p>The unglamorous kind — scattered W-9s, forgotten 1099s, surprise compliance fees, investor updates you meant to send last week.</p>
+      
+      <img src="your-photo.jpg" alt="Madeleine Martini" class="founder-photo">
+      
+      <p>I've felt that pressure firsthand — building internal tools at Seed, scaling ops at Lime and Built In, helping high-growth teams at Bumble stay on track.</p>
+      
+      <p>Now I support 30+ startups in Cincinnati through venture — and one day I walked up to a founder friend in our portfolio who had literal piles of paper spread out around him. I asked what he was doing.</p>
+      
+      <p>He just looked up and laughed: "Paperwork."</p>
+      
+      <p>That moment stuck with me.</p>
+      
+      <p>Because most founders aren't dropping the ball out of carelessness — they're just buried in things that shouldn't require their brainpower in the first place.</p>
+      
+      <p>So I started paying closer attention. The patterns were everywhere:</p>
+      
+      <ul class="pattern-list">
+        <li>Founders manually onboarding contractors</li>
+        <li>Paying late fees on filings they didn't know were due</li>
+        <li>Copy-pasting metrics into investor updates at 11pm</li>
+        <li>Winging operations because they didn't have time to build systems</li>
+      </ul>
+      
+      <p>I built FounderOS to quietly take care of all of that.</p>
+      
+      <p>Not with another dashboard. Not with a todo list. But with an invisible operating layer that connects to the tools you already use — and just gets it done.</p>
+      
+      <div class="final-cta">
+        <p>FounderOS handles the stuff that's not worth your time — but too risky to ignore.</p>
+        <p>No chaos. No checklists. No Sunday scaries.</p>
+        <p>Just calm momentum in the background.</p>
+      </div>
+    </div>
   </main>
 
   <footer class="mini-footer">
