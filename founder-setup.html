@@ -163,14 +163,13 @@
           "Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"
         ];
         const showState = state.company.type === "LLC" || state.company.type === "C-Corp";
-        // Validation: name, type, team, and if needed, state
+        // Validation: name, type, team, and if needed, state (state is only required if showState is true)
         const valid =
           state.company.name &&
           state.company.type &&
           state.company.team &&
           (
-            !showState ||
-            (showState && state.company.state)
+            !showState || (showState && state.company.state)
           );
         return `
         <div class="fade">
@@ -194,7 +193,7 @@
               <select
                 id="company-type"
                 class="w-full px-4 py-3 rounded-lg border border-[#2e2e33] bg-[#2e2e33] text-base focus:border-[#A78BFA] transition"
-                onchange="state.company.type = this.value; renderScreen();"
+                onchange="state.company.type = this.value; state.company.state = ''; renderScreen();"
                 required
               >
                 <option value="" disabled ${!state.company.type ? 'selected' : ''}>Select type</option>
@@ -211,7 +210,7 @@
                 id="company-state"
                 class="w-full px-4 py-3 rounded-lg border border-[#2e2e33] bg-[#2e2e33] text-base focus:border-[#A78BFA] transition"
                 onchange="state.company.state = this.value;"
-                required
+                ${showState ? 'required' : ''}
               >
                 <option value="" disabled ${!state.company.state ? 'selected' : ''}>Select state</option>
                 ${states.map(s => `<option value="${s}" ${state.company.state === s ? 'selected' : ''}>${s}</option>`).join('')}
