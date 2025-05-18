@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contractor Onboarding | FounderOS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #18181C;
+      color: #fff;
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .onboarding-container {
+      background: #23232b;
+      padding: 2.5rem 2rem;
+      border-radius: 1.25rem;
+      box-shadow: 0 4px 32px 0 rgba(166,161,255,0.08);
+      max-width: 400px;
+      width: 100%;
+      margin: 2rem auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      color: #A6A1FF;
+    }
+    form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    input, button {
+      font-family: inherit;
+      font-size: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      outline: none;
+    }
+    input {
+      background: #18181C;
+      color: #fff;
+      border: 1px solid #A6A1FF33;
+      transition: border 0.2s;
+    }
+    input:focus {
+      border: 1.5px solid #A6A1FF;
+    }
+    button {
+      background: linear-gradient(90deg, #A6A1FF 0%, #B7B3FF 100%);
+      color: #fff;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #B7B3FF 0%, #A6A1FF 100%);
+      transform: scale(1.03);
+    }
+    .success, .error {
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 1rem;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+    }
+    .success {
+      background: #232b23;
+      color: #A6FFB1;
+    }
+    .error {
+      background: #2b2323;
+      color: #FFB1A6;
+    }
+  </style>
+</head>
+<body>
+  <div class="onboarding-container">
+    <h1>Contractor Onboarding</h1>
+    <form id="contractor-form" autocomplete="off">
+      <input name="name" placeholder="Full Name" required />
+      <input name="email" type="email" placeholder="Email" required />
+      <input name="role" placeholder="Role" required />
+      <input name="rate" type="number" step="0.01" placeholder="Rate (e.g. 50.00)" required />
+      <input name="start_date" type="date" required />
+      <button type="submit">Add Contractor</button>
+      <div id="form-message"></div>
+    </form>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
+      'https://ouemejgxondpcxhbfxvt.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91ZW1lamd4b25kcGN4aGJmeHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyNjQyMzAsImV4cCI6MjA2Mjg0MDIzMH0.gQgd6ZqNf_wfHuf8YH_QVD0jYJSA7ZpCAhfMHYs_k4'
+    )
+
+    const form = document.getElementById('contractor-form')
+    const messageDiv = document.getElementById('form-message')
+
+    function generateOfferLetterHTML(contractor) {
+      return `
+        <div style="font-family: Inter, Arial, sans-serif; padding: 2rem;">
+          <h1>Offer Letter</h1>
+          <p>Dear ${contractor.name},</p>
+          <p>We are pleased to offer you the role of <strong>${contractor.role}</strong> at a rate of <strong>$${contractor.rate}/hr</strong>, starting on <strong>${contractor.start_date}</strong>.</p>
+          <p>We look forward to working with you!</p>
+          <p style="margin-top:2rem;">Sincerely,<br>FounderOS Team</p>
+        </div>
+      `;
+    }
+
+    async function createAndStoreOfferLetter(contractor) {
+      const html = generateOfferLetterHTML(contractor);
+      const pdfBlob = await html2pdf().from(html).outputPdf('blob');
+      const fileName = `offers/offer_letter_${contractor.id}_${Date.now()}.pdf`;
+      const { error: uploadError } = await supabase.storage
+        .from('contractor-docs')
+        .upload(fileName, pdfBlob, {
+          contentType: 'application/pdf',
+          upsert: true
+        });
+
+      if (uploadError) {
+        throw new Error('Upload failed: ' + uploadError.message);
+      }
+
+      const { data: publicUrlData } = supabase
+        .storage
+        .from('contractor-docs')
+        .getPublicUrl(fileName);
+
+      const publicUrl = publicUrlData.publicUrl;
+
+      const { error: docError } = await supabase
+        .from('contractor_docs')
+        .insert([{
+          contractor_id: contractor.id,
+          doc_type: 'offer_letter',
+          doc_url: publicUrl,
+          signed: false,
+          created_at: new Date().toISOString()
+        }]);
+
+      if (docError) {
+        throw new Error('DB insert failed: ' + docError.message);
+      }
+
+      return publicUrl;
+    }
+
+    // EmailJS function with your credentials
+    function sendContractorEmail({ name, email, offerLetterUrl }) {
+      const serviceID = 'service_oyamykv';
+      const templateID = 'template_8uqtvkk';
+      const publicKey = 'JlSELbWYaajF9y2jd';
+
+      const templateParams = {
+        contractor_name: name,
+        contractor_email: email,
+        offer_letter_url: offerLetterUrl
+      };
+
+      return emailjs.send(serviceID, templateID, templateParams, publicKey);
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      messageDiv.textContent = ''
+      messageDiv.className = ''
+
+      const formData = new FormData(form)
+      const contractor = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        role: formData.get('role'),
+        rate: parseFloat(formData.get('rate')),
+        start_date: formData.get('start_date'),
+        status: 'pending docs',
+        created_at: new Date().toISOString()
+      }
+
+      // Insert contractor and get the new ID
+      const { data, error } = await supabase
+        .from('contractors')
+        .insert([contractor])
+        .select()
+
+      if (error) {
+        messageDiv.textContent = 'Error adding contractor: ' + error.message
+        messageDiv.className = 'error'
+      } else {
+        const newContractor = data[0]
+
+        try {
+          // 1. Generate, upload, and record offer letter
+          const offerLetterUrl = await createAndStoreOfferLetter({
+            id: newContractor.id,
+            name: newContractor.name,
+            role: newContractor.role,
+            rate: newContractor.rate,
+            start_date: newContractor.start_date
+          });
+
+          // 2. Send email via EmailJS
+          await sendContractorEmail({
+            name: newContractor.name,
+            email: newContractor.email,
+            offerLetterUrl
+          });
+
+          messageDiv.textContent = 'Contractor onboarded, offer letter sent!'
+          messageDiv.className = 'success'
+          form.reset()
+        } catch (err) {
+          messageDiv.textContent = err.message
+          messageDiv.className = 'error'
+        }
+      }
+    })
+  </script>
+</body>
+</html>
