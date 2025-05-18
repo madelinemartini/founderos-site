@@ -6,6 +6,7 @@
   <title>FounderOS Onboarding</title>
   <meta name="color-scheme" content="light">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     body {
       background: #f8f6f3;
@@ -68,8 +69,8 @@
         <div class="flex flex-col items-center fade">
           <div class="text-5xl mb-4">👋</div>
           <h1 class="text-2xl sm:text-3xl font-semibold mb-2 text-neutral-900 text-center">Hey there — let’s get FounderOS working for you.</h1>
-          <p class="text-lg text-neutral-600 mb-8 text-center max-w-md">Just a few quick questions so we can run the boring stuff behind the scenes.</p>
-          <button type="button" class="mt-2 px-6 py-3 rounded-xl bg-neutral-900 text-neutral-50 text-lg font-medium shadow transition hover:bg-neutral-800 hover:scale-105 focus:outline-none" onclick="nextScreen()">Get Started</button>
+          <p class="text-lg text-neutral-600 mb-8 text-center max-w-md">We’ll keep this short. Promise. Think of it like stretching before a startup marathon — but more fun.</p>
+          <button type="button" class="mt-2 px-6 py-3 rounded-xl bg-neutral-900 text-neutral-50 text-lg font-medium shadow transition hover:bg-neutral-800 hover:scale-105 focus:outline-none" onclick="nextScreen()">Let’s roll 🚀</button>
         </div>
       `,
       // 1: Stage Selection
@@ -84,7 +85,7 @@
         ];
         return `
           <div class="fade">
-            <h2 class="text-2xl font-semibold mb-2 text-neutral-900">Where are you in your founder journey?</h2>
+            <h2 class="text-2xl font-semibold mb-2 text-neutral-900">Pick your startup adventure <span title="No wrong answers!">🗺️</span></h2>
             <div class="mt-6 grid gap-4">
               ${options.map((opt, i) => `
                 <div
@@ -108,7 +109,7 @@
               `).join('')}
             </div>
             <button type="button" class="mt-8 w-full px-6 py-3 rounded-xl bg-neutral-900 text-neutral-50 text-lg font-medium shadow transition hover:bg-neutral-800 hover:scale-105 focus:outline-none disabled:opacity-40"
-              onclick="nextScreen()" ${state.stage ? '' : 'disabled'}>Continue</button>
+              onclick="nextScreen()" ${state.stage ? '' : 'disabled'}>What’s next?</button>
           </div>
         `;
       },
@@ -126,8 +127,8 @@
         ];
         return `
           <div class="fade">
-            <h2 class="text-2xl font-semibold mb-2 text-neutral-900">What’s dragging your time or energy the most?</h2>
-            <p class="text-neutral-600 mb-4">Pick up to 3</p>
+            <h2 class="text-2xl font-semibold mb-2 text-neutral-900">Ops giving you nightmares? Let’s fix that <span title="We’ve seen it all.">😅</span></h2>
+            <p class="text-neutral-600 mb-4">Pick up to 3 <span title="No judgment.">✨</span></p>
             <div class="grid gap-3 mb-2">
               ${options.map((opt, i) => `
                 <div
@@ -151,17 +152,17 @@
               `).join('')}
             </div>
             <button type="button" class="mt-8 w-full px-6 py-3 rounded-xl bg-neutral-900 text-neutral-50 text-lg font-medium shadow transition hover:bg-neutral-800 hover:scale-105 focus:outline-none disabled:opacity-40"
-              onclick="nextScreen()" ${state.painPoints.length > 0 ? '' : 'disabled'}>Continue</button>
+              onclick="nextScreen()" ${state.painPoints.length > 0 ? '' : 'disabled'}>What’s next?</button>
           </div>
         `;
       },
       // 3: Company Basics
       () => `
         <div class="fade">
-          <h2 class="text-2xl font-semibold mb-2 text-neutral-900">A few details to help tailor your dashboard</h2>
+          <h2 class="text-2xl font-semibold mb-2 text-neutral-900">A few details to help us sprinkle some dashboard magic 🪄</h2>
           <form class="mt-6 grid gap-5" onsubmit="event.preventDefault(); nextScreen();">
             <div>
-              <label class="block text-base mb-1 font-medium" for="company-name">Company Name</label>
+              <label class="block text-base mb-1 font-medium" for="company-name">Company Name <span title="Or your best guess!">🤔</span></label>
               <input
                 id="company-name"
                 type="text"
@@ -213,7 +214,7 @@
               </select>
             </div>
             <button type="submit" class="mt-4 w-full px-6 py-3 rounded-xl bg-neutral-900 text-neutral-50 text-lg font-medium shadow transition hover:bg-neutral-800 hover:scale-105 focus:outline-none disabled:opacity-40"
-              ${state.company.name && state.company.type && state.company.state && state.company.team ? '' : 'disabled'}>Continue</button>
+              ${state.company.name && state.company.type && state.company.state && state.company.team ? '' : 'disabled'}>What’s next?</button>
           </form>
         </div>
       `,
@@ -232,7 +233,7 @@
         ];
         return `
           <div class="fade">
-            <h2 class="text-2xl font-semibold mb-2 text-neutral-900">Which tools are you already using?</h2>
+            <h2 class="text-2xl font-semibold mb-2 text-neutral-900">Which tools are already in your founder toolbox? 🧰</h2>
             <div class="grid gap-3 mt-6 mb-2">
               ${options.map((opt, i) => `
                 <label class="tile-select flex items-center px-5 py-4 rounded-2xl border transition shadow-sm bg-white hover:scale-105 hover:shadow-md cursor-pointer ${state.tools.includes(opt) ? 'border-neutral-900 ring-2 ring-neutral-900' : 'border-neutral-200'}">
@@ -260,7 +261,7 @@
               `).join('')}
             </div>
             <button type="button" class="mt-8 w-full px-6 py-3 rounded-xl bg-neutral-900 text-neutral-50 text-lg font-medium shadow transition hover:bg-neutral-800 hover:scale-105 focus:outline-none"
-              onclick="nextScreen()">Continue</button>
+              onclick="nextScreen()">What’s next?</button>
           </div>
         `;
       },
@@ -268,7 +269,7 @@
       () => `
         <div class="flex flex-col items-center fade">
           <h2 class="text-2xl sm:text-3xl font-semibold mb-2 text-neutral-900 text-center">Thanks! Your dashboard is spinning up now.</h2>
-          <p class="text-lg text-neutral-600 mb-8 text-center max-w-md">We’ll pre-load a few smart workflows based on your answers. You can always tweak it later.</p>
+          <p class="text-lg text-neutral-600 mb-8 text-center max-w-md">Spinning up your startup karma… <span title="We’ll pre-load a few smart workflows based on your answers. You can always tweak it later.">🌀</span></p>
           <button type="button" class="mt-2 px-6 py-3 rounded-xl bg-neutral-900 text-neutral-50 text-lg font-medium shadow transition hover:bg-neutral-800 hover:scale-105 focus:outline-none" onclick="goToDashboard()">Go to Dashboard</button>
         </div>
       `
@@ -301,8 +302,14 @@
     }
 
     function goToDashboard() {
-      // For demo, just reload or redirect
-      window.location.href = '/';
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1500);
     }
 
     // --- Stage Selection ---
@@ -385,13 +392,14 @@
     window.toggleTool = toggleTool;
     window.setToolsOther = setToolsOther;
 
-    // Fade in on load
-    window.onload = () => {
+    // Fade in on load (DOMContentLoaded)
+    document.addEventListener("DOMContentLoaded", () => {
       renderScreen();
       setTimeout(() => {
-        document.getElementById('onboarding-container').classList.add('fade-enter-active');
+        const container = document.getElementById('onboarding-container');
+        if (container) container.classList.add('fade-enter-active');
       }, 10);
-    };
+    });
   </script>
 </body>
 </html>
