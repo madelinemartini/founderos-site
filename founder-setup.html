@@ -162,6 +162,8 @@
         const states = [
           "Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"
         ];
+        // Use a clear label for the "not sure" option
+        const NOT_SURE = "Still exploring";
         const showState = state.company.type === "LLC" || state.company.type === "C-Corp";
         // Validation: name, type, team, and if needed, state (state is only required if showState is true)
         const valid =
@@ -200,7 +202,7 @@
                 <option value="LLC" ${state.company.type === 'LLC' ? 'selected' : ''}>LLC</option>
                 <option value="C-Corp" ${state.company.type === 'C-Corp' ? 'selected' : ''}>C-Corp</option>
                 <option value="Other" ${state.company.type === 'Other' ? 'selected' : ''}>Other</option>
-                <option value="Unknown" ${state.company.type === 'Unknown' ? 'selected' : ''}>Not sure yet — need guidance.</option>
+                <option value="${NOT_SURE}" ${state.company.type === NOT_SURE ? 'selected' : ''}>${NOT_SURE}</option>
               </select>
             </div>
             ${showState ? `
@@ -210,7 +212,7 @@
                 id="company-state"
                 class="w-full px-4 py-3 rounded-lg border border-[#2e2e33] bg-[#2e2e33] text-base focus:border-[#A78BFA] transition"
                 onchange="state.company.state = this.value;"
-                ${showState ? 'required' : ''}
+                required
               >
                 <option value="" disabled ${!state.company.state ? 'selected' : ''}>Select state</option>
                 ${states.map(s => `<option value="${s}" ${state.company.state === s ? 'selected' : ''}>${s}</option>`).join('')}
@@ -286,13 +288,19 @@
       },
       // 5: Final Screen
       () => `
-        <div class="flex flex-col items-center fade">
+        <div id="onboarding-modal" class="flex flex-col items-center fade bg-[#1a1a1d] bg-opacity-95 rounded-xl shadow-lg p-10 relative z-40">
           <div class="text-5xl mb-4">🪄</div>
           <h2 class="text-2xl sm:text-3xl font-semibold mb-2 text-white text-center">Thanks! Your dashboard is spinning up now.</h2>
           <p class="text-lg text-neutral-400 mb-8 text-center max-w-md">Spinning up your startup karma…</p>
-          <button type="button" class="mt-2 px-6 py-3 rounded-xl bg-[#A78BFA] hover:bg-[#8b6ee9] text-neutral-900 text-lg font-medium shadow transition hover:scale-105 focus:outline-none" onclick="goToDashboard()">Go to Dashboard</button>
+          <button type="button" id="dashboard-btn" class="mt-2 px-6 py-3 rounded-xl bg-[#A78BFA] hover:bg-[#8b6ee9] text-neutral-900 text-lg font-medium shadow transition hover:scale-105 focus:outline-none">Go to Dashboard</button>
         </div>
-      `
+        <div id="dashboard-backdrop" class="fixed inset-0 flex items-center justify-center bg-[#18181b] z-10" style="opacity:0; pointer-events:none; transform:scale(0.98) blur(4px); transition:all 1.2s cubic-bezier(.4,0,.2,1);"></div>
+        <div id="welcome-overlay" class="fixed top-[20%] left-0 w-full text-center z-50" style="opacity:0; transition:opacity 0.6s cubic-bezier(.4,0,.2,1) 1.4s, transform 0.6s cubic-bezier(.4,0,.2,1) 1.4s; transform:translateY(20px); pointer-events:none;">
+          <h1 class="text-3xl font-semibold font-[Inter] text-white drop-shadow">Welcome to your HQ${state.company.name ? `, ${state.company.name.split(' ')[0]}` : ''}.</h1>
+          <p class="mt-2 text-neutral-400 text-lg">We’ll run ops. You run the company.</p>
+          <button id="take-tour-btn" class="mt-8 px-6 py-3 rounded-lg bg-[#232336] text-[#A78BFA] font-medium text-base shadow transition hover:scale-105 hover:shadow-[0_0_0_4px_#A78BFA33] animate-pulse">Take the tour</button>
+        </div>
+      `,
     ];
 
     // --- Screen Logic ---
@@ -322,14 +330,35 @@
     }
 
     function goToDashboard() {
-      confetti({
-        particleCount: 150,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 1500);
+      // 1. Melt-away animation for modal
+      const modal = document.getElementById('onboarding-modal');
+      const dashboard = document.getElementById('dashboard-backdrop');
+      const overlay = document.getElementById('welcome-overlay');
+      if (modal) {
+        modal.style.transition = 'opacity 1.2s cubic-bezier(.4,0,.2,1), filter 1.2s cubic-bezier(.4,0,.2,1), mask-image 1.2s cubic-bezier(.4,0,.2,1)';
+        modal.style.filter = 'blur(8px) grayscale(0.7)';
+        modal.style.maskImage = 'linear-gradient(black 100%, transparent 100%)';
+        modal.style.opacity = '0';
+        setTimeout(() => {
+          modal.style.display = 'none';
+          // 2. Dashboard reveal
+          if (dashboard) {
+            dashboard.style.transition = 'all 1.2s cubic-bezier(.4,0,.2,1)';
+            dashboard.style.opacity = '1';
+            dashboard.style.transform = 'scale(1)';
+            dashboard.style.filter = 'blur(0px)';
+          }
+          // 3. Welcome overlay
+          if (overlay) {
+            overlay.style.opacity = '1';
+            overlay.style.transform = 'translateY(0)';
+          }
+          // 4. Optional: Play soft chime
+          // const audio = new Audio('/sounds/chime.mp3');
+          // audio.volume = 0.2;
+          // audio.play();
+        }, 1200);
+      }
     }
 
     // --- Stage Selection ---
@@ -411,6 +440,13 @@
     window.setPainOther = setPainOther;
     window.toggleTool = toggleTool;
     window.setToolsOther = setToolsOther;
+
+    // Attach handler after render
+    document.addEventListener("click", function (e) {
+      if (e.target && e.target.id === "dashboard-btn") {
+        goToDashboard();
+      }
+    });
 
     // Fade in on load (DOMContentLoaded)
     document.addEventListener("DOMContentLoaded", () => {
